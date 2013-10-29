@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     42847,        970]
-NotebookOptionsPosition[     42512,        953]
-NotebookOutlinePosition[     42867,        969]
-CellTagsIndexPosition[     42824,        966]
+NotebookDataLength[     43106,        974]
+NotebookOptionsPosition[     42782,        958]
+NotebookOutlinePosition[     43126,        973]
+CellTagsIndexPosition[     43083,        970]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -24,45 +24,48 @@ Cell[BoxData[
  RowBox[{
   RowBox[{"(*", 
    RowBox[{
-    RowBox[{"Copyright", " ", "Jaan", " ", "Altosaar"}], ",", " ", 
     RowBox[{
      RowBox[{
-      RowBox[{"2012.", " ", "Downloaded", " ", "from", " ", 
-       RowBox[{"jaanaltosaar", ".", "com", ".", " ", "Cumulant"}], " ", 
-       "corrections", " ", "to", " ", "energy"}], " ", "&"}], " ", "specific",
-      " ", "heat"}], ",", " ", 
+      RowBox[{".", " ", 
+       RowBox[{"CumulantExpander", ":", " ", 
+        RowBox[{
+        "Cumulant", " ", "corrections", " ", "to", " ", "energy"}]}]}], " ", 
+      "&"}], " ", "specific", " ", "heat"}], ",", " ", 
     RowBox[{
      RowBox[{
      "for", " ", "arbitrary", " ", "variables", " ", "up", " ", "to", " ", 
       "arbitrary", " ", 
       RowBox[{"order", ".", " ", "Shift"}]}], "+", 
      RowBox[{"enter", " ", "to", " ", 
-      RowBox[{"run", ".", " ", 
-       RowBox[{"WARNING", ":", " ", 
-        RowBox[{
-        "anything", " ", "higher", " ", "than", " ", "3", "rd", " ", "order", 
-         " ", "takes", " ", "a", " ", "significant", " ", "amount", " ", "of",
-          " ", "time"}]}]}]}]}], ",", " ", 
-    RowBox[{
-     RowBox[{
-     "so", " ", "save", " ", "any", " ", "work", " ", "you", " ", "may", " ", 
-      "have", " ", "before", " ", "attempting", " ", 
-      RowBox[{"it", ".", " ", "The"}], " ", "resulting", " ", "specific", " ",
-       "heat", " ", "expression", " ", "can", " ", "be", " ", "plugged", " ", 
-      "into", " ", "C", " ", "or", " ", "Matlab", " ", "using", " ", "the", 
-      " ", "Mathematica", " ", "function", " ", "CForm", " ", "and", " ", 
-      "appropriate", " ", "string", " ", 
+      RowBox[{"run", ".", " ", "Finding"}], " ", "higher", " ", "than", " ", 
+      "3", "rd", " ", "order", " ", "may", " ", "take", " ", "more", " ", 
+      RowBox[{"time", ".", " ", "The"}], " ", "resulting", " ", "specific", 
+      " ", "heat", " ", "expression", " ", "can", " ", "be", " ", "plugged", 
+      " ", "into", " ", "C", " ", "or", " ", "Matlab", " ", "using", " ", 
+      "the", " ", "Mathematica", " ", "function", " ", "CForm", " ", "and", 
+      " ", "appropriate", " ", "string", " ", 
       RowBox[{"replacements", ".", " ", "You"}], " ", "may", " ", "get", " ", 
       "a", " ", "warning", " ", "about", " ", "dynamic", " ", "content"}], 
      " ", "-", " ", 
      RowBox[{
-     "that", " ", "is", " ", "because", " ", "Times", " ", "is", " ", "being",
-       " ", 
+     "that", " ", "is", " ", "because", " ", "the", " ", "Mathematica", " ", 
+      "function", " ", "Times", " ", "is", " ", "being", " ", 
       RowBox[{"UnProtected", "/", "Protected"}], " ", "to", " ", "be", " ", 
       "able", " ", "to", " ", "write", " ", 
       RowBox[{"H_i", "^", "2"}], " ", "as", " ", "H_i", "*", 
-      RowBox[{"H_i", "."}]}]}]}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"H_i", "."}]}]}]}], " ", "*)"}], "\[IndentingNewLine]", 
   "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"MIT", " ", "License"}], ",", " ", 
+    RowBox[{
+     RowBox[{"Copyright", " ", "2012"}], "-", 
+     RowBox[{"2013", " ", "Jaan", " ", "Altosaar", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"Contact", ":", " ", "https", ":"}], "//", 
+        RowBox[{"jaan", ".", "io"}]}], ")"}]}]}]}], "*)"}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]", 
   RowBox[{"(*", 
    RowBox[{
     RowBox[{"Remove", " ", "all", " ", "variables"}], ",", " ", 
@@ -711,7 +714,9 @@ cumulants, as a function of the perturbation parameters {a_i}:\>\"", ",",
   3.554657479520702*^9, 3.554657493162553*^9}, {3.554657598533724*^9, 
   3.5546579760373077`*^9}, {3.554675757601222*^9, 3.554675898386278*^9}, {
   3.5546760501177073`*^9, 3.554676064388698*^9}, {3.554676710776471*^9, 
-  3.554676757719729*^9}}],
+  3.554676757719729*^9}, {3.592068544808651*^9, 3.5920685771625013`*^9}, {
+  3.5920686280964146`*^9, 3.5920686645965023`*^9}, {3.5920687617430587`*^9, 
+  3.592068782081222*^9}, {3.592068822225518*^9, 3.5920688521082277`*^9}}],
 
 Cell[BoxData[
  TagBox[
@@ -953,8 +958,7 @@ cumulants, as a function of the perturbation parameters {a_i}:", Bold],
 },
 WindowSize->{1365, 1004},
 WindowMargins->{{4, Automatic}, {Automatic, 4}},
-FrontEndVersion->"8.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (October 5, \
-2011)",
+FrontEndVersion->"9.0 for Microsoft Windows (64-bit) (January 25, 2013)",
 StyleDefinitions->"Default.nb"
 ]
 (* End of Notebook Content *)
@@ -969,8 +973,8 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[579, 22, 30198, 691, 1483, "Input"],
-Cell[30780, 715, 11716, 235, 925, "Output"]
+Cell[579, 22, 30468, 696, 2052, "Input"],
+Cell[31050, 720, 11716, 235, 925, "Output"]
 }, Open  ]]
 }
 ]
