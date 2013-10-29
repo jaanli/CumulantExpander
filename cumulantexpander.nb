@@ -1,0 +1,979 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     42847,        970]
+NotebookOptionsPosition[     42512,        953]
+NotebookOutlinePosition[     42867,        969]
+CellTagsIndexPosition[     42824,        966]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"Copyright", " ", "Jaan", " ", "Altosaar"}], ",", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"2012.", " ", "Downloaded", " ", "from", " ", 
+       RowBox[{"jaanaltosaar", ".", "com", ".", " ", "Cumulant"}], " ", 
+       "corrections", " ", "to", " ", "energy"}], " ", "&"}], " ", "specific",
+      " ", "heat"}], ",", " ", 
+    RowBox[{
+     RowBox[{
+     "for", " ", "arbitrary", " ", "variables", " ", "up", " ", "to", " ", 
+      "arbitrary", " ", 
+      RowBox[{"order", ".", " ", "Shift"}]}], "+", 
+     RowBox[{"enter", " ", "to", " ", 
+      RowBox[{"run", ".", " ", 
+       RowBox[{"WARNING", ":", " ", 
+        RowBox[{
+        "anything", " ", "higher", " ", "than", " ", "3", "rd", " ", "order", 
+         " ", "takes", " ", "a", " ", "significant", " ", "amount", " ", "of",
+          " ", "time"}]}]}]}]}], ",", " ", 
+    RowBox[{
+     RowBox[{
+     "so", " ", "save", " ", "any", " ", "work", " ", "you", " ", "may", " ", 
+      "have", " ", "before", " ", "attempting", " ", 
+      RowBox[{"it", ".", " ", "The"}], " ", "resulting", " ", "specific", " ",
+       "heat", " ", "expression", " ", "can", " ", "be", " ", "plugged", " ", 
+      "into", " ", "C", " ", "or", " ", "Matlab", " ", "using", " ", "the", 
+      " ", "Mathematica", " ", "function", " ", "CForm", " ", "and", " ", 
+      "appropriate", " ", "string", " ", 
+      RowBox[{"replacements", ".", " ", "You"}], " ", "may", " ", "get", " ", 
+      "a", " ", "warning", " ", "about", " ", "dynamic", " ", "content"}], 
+     " ", "-", " ", 
+     RowBox[{
+     "that", " ", "is", " ", "because", " ", "Times", " ", "is", " ", "being",
+       " ", 
+      RowBox[{"UnProtected", "/", "Protected"}], " ", "to", " ", "be", " ", 
+      "able", " ", "to", " ", "write", " ", 
+      RowBox[{"H_i", "^", "2"}], " ", "as", " ", "H_i", "*", 
+      RowBox[{"H_i", "."}]}]}]}], "*)"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"Remove", " ", "all", " ", "variables"}], ",", " ", 
+    RowBox[{"etc", "."}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"Remove", "[", "\"\<Global`*\>\"", "]"}], " ", "*)"}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"Use", " ", "Manipulate", " ", "for", " ", "GUI"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"Manipulate", "[", 
+    RowBox[{
+     RowBox[{"Pane", "[", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "Start", " ", "timing", " ", "for", " ", "CPU", " ", "time", " ", 
+        "needed", " ", "to", " ", "generate", " ", "expressions"}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"t", "=", 
+         RowBox[{
+         "AbsoluteTiming", "[", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          
+          RowBox[{
+           RowBox[{"hams", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{"ToExpression", "[", 
+               RowBox[{"\"\<H\>\"", "<>", 
+                RowBox[{"ToString", "[", "i", "]"}]}], "]"}], ",", 
+              RowBox[{"{", 
+               RowBox[{"i", ",", "nvars"}], "}"}]}], "]"}]}], ";", " ", 
+           RowBox[{"(*", 
+            RowBox[{
+            "List", " ", "of", " ", "perturbing", " ", "Hamiltonians", " ", 
+             RowBox[{"{", "H_i", "}"}]}], "*)"}], "\[IndentingNewLine]", 
+           RowBox[{"lams", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{"ToExpression", "[", 
+               RowBox[{"\"\<a\>\"", "<>", 
+                RowBox[{"ToString", "[", "i", "]"}]}], "]"}], ",", 
+              RowBox[{"{", 
+               RowBox[{"i", ",", "nvars"}], "}"}]}], "]"}]}], ";", " ", 
+           RowBox[{"(*", 
+            RowBox[{
+            "List", " ", "of", " ", "perturbation", " ", "parameters", " ", 
+             RowBox[{"{", "a_i", "}"}], " ", "corresponding", " ", "to", " ", 
+             
+             RowBox[{"{", "H_i", "}"}]}], "*)"}], "\[IndentingNewLine]", 
+           RowBox[{"H", "=", 
+            RowBox[{"H0", "+", 
+             RowBox[{"Plus", "@@", 
+              RowBox[{"Table", "[", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"lams", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], "*", 
+                 RowBox[{"hams", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}]}], ",", 
+                RowBox[{"{", 
+                 RowBox[{"i", ",", "nvars"}], "}"}]}], "]"}]}]}]}], ";", 
+           RowBox[{"(*", 
+            RowBox[{"H", " ", "=", " ", 
+             RowBox[{
+             "full", " ", "Hamiltonian", " ", "with", " ", "perturbations", 
+              " ", 
+              RowBox[{"lambda_i", "'"}], "s"}]}], "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+             RowBox[{
+             "Taylor", " ", "expand", " ", "the", " ", "partition", " ", 
+              "function", " ", "to", " ", "ntH", " ", "order"}], ",", " ", 
+             RowBox[{
+             "assuming", " ", "small", " ", "perturbation", " ", 
+              "parameters"}]}], "*)"}], "\[IndentingNewLine]", 
+           RowBox[{"e", "=", 
+            RowBox[{"Normal", "[", 
+             RowBox[{"Series", "[", 
+              RowBox[{
+               RowBox[{"Exp", "[", "y", "]"}], ",", 
+               RowBox[{"{", 
+                RowBox[{"y", ",", "0", ",", "norder"}], "}"}]}], "]"}], 
+             "]"}]}], ";", " ", "\[IndentingNewLine]", 
+           RowBox[{"exps", "=", 
+            RowBox[{"Array", "[", 
+             RowBox[{"1", ",", "nvars"}], "]"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"i", "=", "1"}], ";", " ", 
+           RowBox[{"While", "[", 
+            RowBox[{
+             RowBox[{"i", "\[LessEqual]", "nvars"}], ",", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"exps", "[", 
+                RowBox[{"[", "i", "]"}], "]"}], "=", 
+               RowBox[{"e", "/.", 
+                RowBox[{"{", 
+                 RowBox[{"y", "\[Rule]", 
+                  RowBox[{
+                   RowBox[{"-", "b"}], "*", 
+                   RowBox[{"lams", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], "*", 
+                   RowBox[{"hams", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}]}]}], "}"}]}]}], ";", 
+              RowBox[{"i", "++"}]}]}], "]"}], " ", ";", "\[IndentingNewLine]", 
+           RowBox[{"expr", "=", 
+            RowBox[{"Expand", "[", 
+             RowBox[{"Times", "@@", "exps"}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"expr2", "=", 
+            RowBox[{"Plus", "@@", 
+             RowBox[{"Pick", "[", 
+              RowBox[{
+               RowBox[{"List", "@@", " ", "expr"}], ",", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"Total", "@", 
+                  RowBox[{"Exponent", "[", 
+                   RowBox[{"#", ",", "lams"}], "]"}]}], "&"}], "/@", 
+                RowBox[{"List", "@@", "expr"}]}], ",", 
+               RowBox[{"Alternatives", "@@", 
+                RowBox[{"Range", "[", 
+                 RowBox[{"0", ",", "norder"}], "]"}]}]}], "]"}]}]}], ";", " ",
+            "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+            "Allow", " ", "ForTranForm", " ", "to", " ", "write", " ", 
+             "\"\<H1^2\>\"", " ", "as", " ", "\"\<H1*H1\>\""}], "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{"Unprotect", "[", "Power", "]"}], ";", "\n", "\t", 
+           RowBox[{
+            RowBox[{"Format", "[", 
+             RowBox[{
+              RowBox[{"Power", "[", 
+               RowBox[{"a_", ",", "n_Integer"}], "]"}], ",", "FortranForm"}], 
+             "]"}], ":=", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"HoldForm", "@@", 
+               RowBox[{"{", 
+                RowBox[{"Table", "[", 
+                 RowBox[{"a", ",", 
+                  RowBox[{"{", "n", "}"}]}], "]"}], "}"}]}], ")"}], "/.", 
+             RowBox[{"List", "\[Rule]", "Times"}]}]}], " ", ";", "\n", "\t", 
+           RowBox[{"Protect", "[", "Power", "]"}], ";", "\[IndentingNewLine]",
+            "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+             RowBox[{
+             "Convert", " ", "H_i", "*", "H_i", " ", "to", " ", "H_iH", 
+              RowBox[{"_i", "[", "b", "]"}], " ", "where", " ", 
+              RowBox[{"the", " ", "[", "b", "]"}], " ", "implies", " ", "a", 
+              " ", "function", " ", "of", " ", "b"}], ",", " ", 
+             RowBox[{"or", " ", "\\", "Beta"}], ",", " ", 
+             RowBox[{"defined", " ", "as", " ", 
+              RowBox[{"1", "/", "T"}], " ", "where", " ", "T", " ", "is", " ",
+               "temperature"}]}], "*)"}], "\[IndentingNewLine]", 
+           RowBox[{"prelist", "=", 
+            RowBox[{"Join", "[", 
+             RowBox[{
+              RowBox[{"{", "H0", "}"}], ",", 
+              RowBox[{"Apply", "[", 
+               RowBox[{"Times", ",", 
+                RowBox[{"DeleteDuplicates", "[", 
+                 RowBox[{"Join", "@@", 
+                  RowBox[{"Table", "[", 
+                   RowBox[{
+                    RowBox[{"Tuples", "[", 
+                    RowBox[{"hams", ",", "i"}], "]"}], ",", 
+                    RowBox[{"{", 
+                    RowBox[{"i", ",", "norder"}], "}"}]}], "]"}]}], "]"}], 
+                ",", 
+                RowBox[{"{", "1", "}"}]}], "]"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"n", "=", 
+            RowBox[{"Length", "[", "prelist", "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"list", "=", 
+            RowBox[{"Array", "[", 
+             RowBox[{"1", ",", "n"}], "]"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"i", "=", "1"}], ";", " ", 
+           RowBox[{"While", "[", 
+            RowBox[{
+             RowBox[{"i", "\[LessEqual]", "n"}], ",", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"list", "[", 
+                RowBox[{"[", "i", "]"}], "]"}], "=", 
+               RowBox[{"ToExpression", "[", 
+                RowBox[{"StringReplace", "[", 
+                 RowBox[{
+                  RowBox[{"ToString", "[", 
+                   RowBox[{"FortranForm", "[", 
+                    RowBox[{"prelist", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], "]"}], "]"}], ",", 
+                  RowBox[{"{", 
+                   RowBox[{
+                    RowBox[{"\"\<*\>\"", "\[Rule]", "\"\<\>\""}], ",", 
+                    RowBox[{"\"\<(\>\"", "\[Rule]", "\"\<\>\""}], ",", 
+                    RowBox[{"\"\<)\>\"", "\[Rule]", "\"\<\>\""}]}], "}"}]}], 
+                 "]"}], "]"}]}], ";", 
+              RowBox[{"i", "++"}]}]}], "]"}], " ", ";", "\[IndentingNewLine]", 
+           RowBox[{"rules", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"prelist", "[", 
+                RowBox[{"[", "i", "]"}], "]"}], "\[Rule]", 
+               RowBox[{"list", "[", 
+                RowBox[{"[", "i", "]"}], "]"}]}], ",", 
+              RowBox[{"{", 
+               RowBox[{"i", ",", 
+                RowBox[{"Length", "[", "list", "]"}]}], "}"}]}], "]"}]}], ";",
+            "\[IndentingNewLine]", 
+           RowBox[{"rules2", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"list", "[", 
+                RowBox[{"[", "i", "]"}], "]"}], "\[Rule]", 
+               RowBox[{
+                RowBox[{"list", "[", 
+                 RowBox[{"[", "i", "]"}], "]"}], "[", "b", "]"}]}], ",", 
+              RowBox[{"{", 
+               RowBox[{"i", ",", 
+                RowBox[{"Length", "[", "list", "]"}]}], "}"}]}], "]"}]}], ";",
+            "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+            "Expand", " ", "the", " ", "logarithm", " ", "of", " ", "the", 
+             " ", "partition", " ", "function", " ", "to", " ", "nth", " ", 
+             "order"}], "*)"}], "\[IndentingNewLine]", 
+           RowBox[{"x", "=", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"-", "expr2"}], "+", "1"}], "/.", "rules"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"expr3", "=", 
+            RowBox[{"Expand", "[", 
+             RowBox[{
+              RowBox[{"Normal", "[", 
+               RowBox[{"Series", "[", 
+                RowBox[{
+                 RowBox[{"Log", "[", 
+                  RowBox[{"1", "-", "y"}], "]"}], ",", 
+                 RowBox[{"{", 
+                  RowBox[{"y", ",", "0", ",", "norder"}], "}"}]}], "]"}], 
+               "]"}], "/.", 
+              RowBox[{"y", "\[Rule]", "x"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"nvars", "\[Equal]", "1"}], "&&", 
+              RowBox[{"norder", "\[Equal]", "1"}]}], ",", 
+             RowBox[{"finalexpansion", "=", 
+              RowBox[{
+               RowBox[{"-", "a1"}], "*", "b", "*", 
+               RowBox[{"H1", "[", "b", "]"}]}]}], ",", 
+             RowBox[{
+              RowBox[{"finalexpansion", "=", 
+               RowBox[{
+                RowBox[{"Plus", "@@", 
+                 RowBox[{"Pick", "[", 
+                  RowBox[{
+                   RowBox[{"List", "@@", "expr3"}], ",", 
+                   RowBox[{
+                    RowBox[{
+                    RowBox[{"Total", "@", 
+                    RowBox[{"Exponent", "[", 
+                    RowBox[{"#", ",", "lams"}], "]"}]}], "&"}], "/@", 
+                    RowBox[{"List", "@@", "expr3"}]}], ",", 
+                   RowBox[{"Alternatives", "@@", 
+                    RowBox[{"Range", "[", 
+                    RowBox[{"0", ",", "norder"}], "]"}]}]}], "]"}]}], "/.", 
+                "rules2"}]}], ";"}]}], "]"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+            "Add", " ", "prefix", " ", "d", " ", "to", " ", "initial", " ", 
+             "Hamiltonians"}], "*)"}], "\[IndentingNewLine]", 
+           RowBox[{"d", "=", 
+            RowBox[{"Array", "[", 
+             RowBox[{"1", ",", "n"}], "]"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"i", "=", "1"}], ";", " ", 
+           RowBox[{"While", "[", 
+            RowBox[{
+             RowBox[{"i", "\[LessEqual]", " ", "n"}], ",", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"d", "[", 
+                RowBox[{"[", "i", "]"}], "]"}], "=", 
+               RowBox[{"ToExpression", "[", 
+                RowBox[{"\"\<d\>\"", "<>", 
+                 RowBox[{"ToString", "[", 
+                  RowBox[{"list", "[", 
+                   RowBox[{"[", "i", "]"}], "]"}], "]"}]}], "]"}]}], ";", 
+              RowBox[{"i", "++"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+            "Add", " ", "suffix", " ", "H0", " ", "to", " ", "initial", " ", 
+             "Hamiltonians"}], "*)"}], "\[IndentingNewLine]", 
+           RowBox[{"d2", "=", 
+            RowBox[{"Array", "[", 
+             RowBox[{"1", ",", "n"}], "]"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"i", "=", "1"}], ";", " ", 
+           RowBox[{"While", "[", 
+            RowBox[{
+             RowBox[{"i", "\[LessEqual]", "n"}], ",", " ", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"d2", "[", 
+                RowBox[{"[", "i", "]"}], "]"}], "=", 
+               RowBox[{"ToExpression", "[", 
+                RowBox[{
+                 RowBox[{"ToString", "[", 
+                  RowBox[{"list", "[", 
+                   RowBox[{"[", "i", "]"}], "]"}], "]"}], "<>", 
+                 "\"\<H0\>\""}], "]"}]}], ";", 
+              RowBox[{"i", "++"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+            "Add", " ", "prefix", " ", "d", " ", "and", " ", "suffix", " ", 
+             "H0", " ", "to", " ", "initial", " ", "Hamiltonians"}], "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{"dd2", "=", 
+            RowBox[{"Array", "[", 
+             RowBox[{"1", ",", "n"}], "]"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"i", "=", "1"}], ";", " ", 
+           RowBox[{"While", "[", 
+            RowBox[{
+             RowBox[{"i", "\[LessEqual]", " ", "n"}], ",", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"dd2", "[", 
+                RowBox[{"[", "i", "]"}], "]"}], "=", 
+               RowBox[{"ToExpression", "[", 
+                RowBox[{"\"\<d\>\"", "<>", 
+                 RowBox[{"ToString", "[", 
+                  RowBox[{"d2", "[", 
+                   RowBox[{"[", "i", "]"}], "]"}], "]"}]}], "]"}]}], ";", 
+              RowBox[{"i", "++"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+             RowBox[{
+             "Define", " ", "derivatives", " ", "of", " ", "Hi", " ", "as", 
+              " ", "dHi"}], ",", " ", 
+             RowBox[{
+              RowBox[{"identifying", " ", "dHi"}], " ", "=", " ", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"\\", "Delta"}], " ", "H_i"}], " ", "=", " ", 
+               RowBox[{"<", "H_i", ">", "<", 
+                RowBox[{"H_", "0"}], ">", " ", 
+                RowBox[{"-", " ", 
+                 RowBox[{"<", 
+                  RowBox[{"H_iH", "_", "0"}], ">"}]}]}]}]}]}], "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{"list2", "=", 
+            RowBox[{"Join", "[", 
+             RowBox[{"list", ",", "d2"}], "]"}]}], ";", "\[IndentingNewLine]", 
+           RowBox[{"i", "=", "1"}], ";", " ", 
+           RowBox[{"While", "[", 
+            RowBox[{
+             RowBox[{"i", "\[LessEqual]", 
+              RowBox[{"Length", "[", "list2", "]"}]}], ",", 
+             RowBox[{
+              RowBox[{
+               RowBox[{
+                RowBox[{
+                 RowBox[{"Derivative", "[", "1", "]"}], "[", 
+                 RowBox[{"list2", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], "]"}], "[", "b", "]"}], "=", 
+               RowBox[{
+                RowBox[{"ToExpression", "[", 
+                 RowBox[{"\"\<d\>\"", "<>", 
+                  RowBox[{"ToString", "[", 
+                   RowBox[{"list2", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], "]"}]}], "]"}], "[", "b", 
+                "]"}]}], ";", 
+              RowBox[{"i", "++"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+             RowBox[{"Define", " ", "derivatives", " ", "of", " ", "dHi"}], 
+             ",", " ", 
+             RowBox[{
+             "whicH", " ", "leads", " ", "to", " ", "dHiH0", " ", "terms"}], 
+             ",", " ", 
+             RowBox[{
+             "warranting", " ", "the", " ", "previous", " ", "prefix", " ", 
+              "and", " ", "suffix", " ", "definitions"}]}], "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{"i", "=", "1"}], ";", " ", 
+           RowBox[{"While", "[", 
+            RowBox[{
+             RowBox[{"i", "\[LessEqual]", "n"}], ",", 
+             RowBox[{
+              RowBox[{
+               RowBox[{
+                RowBox[{
+                 RowBox[{"Derivative", "[", "1", "]"}], "[", 
+                 RowBox[{"d", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}], "]"}], "[", "b", "]"}], "=", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"d", "[", 
+                   RowBox[{"[", "i", "]"}], "]"}], "[", "b", "]"}], "*", 
+                 RowBox[{"H0", "[", "b", "]"}]}], "+", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"ToExpression", "[", 
+                   RowBox[{"StringReplace", "[", 
+                    RowBox[{
+                    RowBox[{"ToString", "[", 
+                    RowBox[{"d", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], "]"}], ",", 
+                    RowBox[{"\"\<d\>\"", "\[Rule]", "\"\<\>\""}]}], "]"}], 
+                   "]"}], "[", "b", "]"}], "*", 
+                 RowBox[{"dH0", "[", "b", "]"}]}], "-", 
+                RowBox[{"ToExpression", "[", 
+                 RowBox[{"StringJoin", "[", 
+                  RowBox[{
+                   RowBox[{"ToString", "[", 
+                    RowBox[{"d", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], "]"}], ",", 
+                   "\"\<H0[b]\>\""}], "]"}], "]"}]}]}], ";", 
+              RowBox[{"i", "++"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+             RowBox[{"Identify", " ", "<", 
+              RowBox[{"U_", "0"}], ">"}], " ", "=", " ", 
+             RowBox[{
+              RowBox[{"-", "dlnZ"}], "/", "db"}]}], "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"lnZ0", "'"}], "[", "b", "]"}], "=", 
+            RowBox[{"-", 
+             RowBox[{"H0", "[", "b", "]"}]}]}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"lnZ", "[", "b", "]"}], "=", 
+            RowBox[{
+             RowBox[{"lnZ0", "[", "b", "]"}], "+", "finalexpansion"}]}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+            "Compute", " ", "<", "U", ">", " ", "and", " ", "<", "Cv", ">"}], 
+            "*)"}], "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"U", "[", "b", "]"}], "=", 
+            RowBox[{"-", 
+             RowBox[{"D", "[", 
+              RowBox[{
+               RowBox[{"lnZ", "[", "b", "]"}], ",", "b"}], "]"}]}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"Cv", "[", "b", "]"}], "=", 
+            RowBox[{
+             RowBox[{"-", 
+              RowBox[{"b", "^", "2"}]}], "*", 
+             RowBox[{"D", "[", 
+              RowBox[{
+               RowBox[{"U", "[", "b", "]"}], ",", "b"}], "]"}]}]}], ";", 
+           "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{"Define", " ", "dHi"}], " ", "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{"i", "=", "1"}], ";", " ", 
+           RowBox[{"While", "[", 
+            RowBox[{
+             RowBox[{"i", "\[LessEqual]", "n"}], ",", 
+             RowBox[{
+              RowBox[{
+               RowBox[{
+                RowBox[{"d", "[", 
+                 RowBox[{"[", "i", "]"}], "]"}], "[", "b", "]"}], "=", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"list", "[", 
+                   RowBox[{"[", "i", "]"}], "]"}], "[", "b", "]"}], "*", 
+                 RowBox[{"H0", "[", "b", "]"}]}], "-", 
+                RowBox[{"ToExpression", "[", 
+                 RowBox[{
+                  RowBox[{"ToString", "[", 
+                   RowBox[{"list", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], "]"}], "<>", 
+                  "\"\<H0[b]\>\""}], "]"}]}]}], ";", 
+              RowBox[{"i", "++"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{"Define", " ", "dHiH0"}], " ", "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{"i", "=", "1"}], ";", " ", 
+           RowBox[{"While", "[", 
+            RowBox[{
+             RowBox[{"i", "\[LessEqual]", "n"}], ",", 
+             RowBox[{
+              RowBox[{
+               RowBox[{
+                RowBox[{"dd2", "[", 
+                 RowBox[{"[", "i", "]"}], "]"}], "[", "b", "]"}], "=", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"d2", "[", 
+                   RowBox[{"[", "i", "]"}], "]"}], "[", "b", "]"}], "*", 
+                 RowBox[{"H0", "[", "b", "]"}]}], "-", 
+                RowBox[{"ToExpression", "[", 
+                 RowBox[{
+                  RowBox[{"ToString", "[", 
+                   RowBox[{"d2", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], "]"}], "<>", 
+                  "\"\<H0[b]\>\""}], "]"}]}]}], ";", 
+              RowBox[{"i", "++"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
+           "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{
+             RowBox[{
+             "Plug", " ", "in", " ", "definitions", " ", "of", " ", "dHi", 
+              " ", "and", " ", "dHiH0", " ", "for", " ", "final", " ", 
+              "expression", " ", "of"}], " ", "<", "U", ">", " ", "and", " ", 
+             "<", "Cv", ">", " ", 
+             RowBox[{
+             "and", " ", "get", " ", "number", " ", "of", " ", "terms"}]}], 
+            "*)"}], "\[IndentingNewLine]", 
+           RowBox[{"nterms", "=", 
+            RowBox[{"Length", "[", 
+             RowBox[{"List", "@@", 
+              RowBox[{"Expand", "[", 
+               RowBox[{"Cv", "[", "b", "]"}], "]"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"finalu", "=", 
+            RowBox[{"Expand", "[", 
+             RowBox[{"U", "[", "b", "]"}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"ntermsu", "=", 
+            RowBox[{"Length", "[", 
+             RowBox[{"List", "@@", 
+              RowBox[{"Expand", "[", "finalu", "]"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"finalc", "=", 
+            RowBox[{"Expand", "[", 
+             RowBox[{"Cv", "[", "b", "]"}], "]"}]}], ";", 
+           RowBox[{"(*", 
+            RowBox[{
+             RowBox[{"ToExpression", "[", 
+              RowBox[{"StringReplace", "[", 
+               RowBox[{
+                RowBox[{"ToString", "[", 
+                 RowBox[{"FullSimplify", "[", 
+                  RowBox[{"Cv", "[", "b", "]"}], "]"}], "]"}], ",", 
+                RowBox[{"{", 
+                 RowBox[{
+                  RowBox[{"\"\<[b]\>\"", "\[Rule]", "\"\<\>\""}], ",", 
+                  RowBox[{"\"\<H\>\"", "\[Rule]", "\"\<H\>\""}]}], "}"}]}], 
+               "]"}], "]"}], ";"}], "*)"}], "\[IndentingNewLine]", 
+           RowBox[{"ntermsc", "=", 
+            RowBox[{"Length", "[", 
+             RowBox[{"List", "@@", 
+              RowBox[{"Expand", "[", "finalc", "]"}]}], "]"}]}], ";"}], 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{"GUI", " ", "code"}], "*)"}], "\[IndentingNewLine]", 
+        RowBox[{"Column", "[", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"Style", "[", 
+            RowBox[{
+            "\"\<Note: b=\[Beta]=1/T, Boltzmann constant is set to 1, and \
+every function of [b] is identified as an expectation value, i.e. H1H0[b] -> \
+<H1H0>.\>\"", ",", "Bold"}], "]"}], ",", 
+           RowBox[{"Style", "[", 
+            RowBox[{
+            "\"\<\\nHamiltonian with small perturbation parameters {a_i} and \
+perturbations {H_i}:\>\"", ",", "Bold"}], "]"}], ",", "H", ",", 
+           RowBox[{"Style", "[", 
+            RowBox[{
+             RowBox[{"StringJoin", "[", 
+              RowBox[{"\"\<\\nNumber of terms in energy is \>\"", ",", 
+               RowBox[{"ToString", "[", "ntermsu", "]"}], ",", 
+               "\"\< and number of terms in specific heat is \>\"", ",", 
+               RowBox[{"ToString", "[", "ntermsc", "]"}], ",", 
+               "\"\<. CPU time used is \>\"", ",", " ", 
+               RowBox[{"ToString", "[", 
+                RowBox[{"t", "[", 
+                 RowBox[{"[", "1", "]"}], "]"}], "]"}], ",", 
+               "\"\< seconds.\>\""}], "]"}], ",", "Bold"}], "]"}], ",", 
+           RowBox[{"Style", "[", 
+            RowBox[{
+            "\"\<\\nEnergy U corrected by the cumulants, as a function of \
+perturbation parameters {a_i}:\>\"", " ", ",", "Bold"}], "]"}], ",", 
+           RowBox[{"\"\<U =\>\"", " ", "finalu"}], ",", "\[IndentingNewLine]", 
+           RowBox[{"Style", "[", 
+            RowBox[{
+            "\"\<\\nSpecific heat at constant volume, Cv, corrected by the \
+cumulants, as a function of the perturbation parameters {a_i}:\>\"", ",", 
+             "Bold"}], "]"}], ",", 
+           RowBox[{"\"\<Cv =\>\"", " ", "finalc"}]}], "}"}], "]"}]}], 
+       "\[IndentingNewLine]", ",", 
+       RowBox[{"ImageSize", "\[Rule]", 
+        RowBox[{"{", 
+         RowBox[{"900", ",", "800"}], "}"}]}], ",", 
+       RowBox[{"Scrollbars", "\[Rule]", 
+        RowBox[{"{", 
+         RowBox[{"False", ",", "True"}], "}"}]}]}], "]"}], 
+     "\[IndentingNewLine]", "\t", 
+     RowBox[{"(*", 
+      RowBox[{
+      "set", " ", "default", " ", "variables", " ", "to", " ", "3", " ", 
+       "and", " ", "default", " ", "order", " ", "to", " ", "2"}], "*)"}], 
+     "\n", ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"nvars", ",", "3", ",", 
+         RowBox[{"Style", "[", 
+          RowBox[{"\"\<Number of perturbations\>\"", ",", "Bold"}], "]"}]}], 
+        "}"}], ",", "1", ",", "10", ",", "1", ",", 
+       RowBox[{"ControlType", "\[Rule]", "SetterBar"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"norder", ",", "2", ",", 
+         RowBox[{"Style", "[", 
+          RowBox[{"\"\<Order of expansion\>\"", ",", "Bold"}], "]"}]}], "}"}],
+        ",", "1", ",", "10", ",", "1", ",", 
+       RowBox[{"ControlType", "\[Rule]", "SetterBar"}]}], "}"}], ",", 
+     RowBox[{"LocalizeVariables", "\[Rule]", "True"}], ",", 
+     RowBox[{"TrackedSymbols", "\[RuleDelayed]", 
+      RowBox[{"{", 
+       RowBox[{"nvars", ",", "norder"}], "}"}]}]}], "]"}], 
+   "\[IndentingNewLine]"}]}]], "Input",
+ CellChangeTimes->{{3.554657398715125*^9, 3.554657425373513*^9}, {
+  3.554657479520702*^9, 3.554657493162553*^9}, {3.554657598533724*^9, 
+  3.5546579760373077`*^9}, {3.554675757601222*^9, 3.554675898386278*^9}, {
+  3.5546760501177073`*^9, 3.554676064388698*^9}, {3.554676710776471*^9, 
+  3.554676757719729*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`norder$$ = 3, $CellContext`nvars$$ = 4, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`nvars$$], 3, 
+       Style["Number of perturbations", Bold]}, 1, 10, 1}, {{
+       Hold[$CellContext`norder$$], 2, 
+       Style["Order of expansion", Bold]}, 1, 10, 1}}, Typeset`size$$ = {
+    900., {397., 403.}}, Typeset`update$$ = 0, Typeset`initDone$$, 
+    Typeset`skipInitDone$$ = True, $CellContext`nvars$28541$$ = 
+    0, $CellContext`norder$28542$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`norder$$ = 2, $CellContext`nvars$$ = 3}, 
+      "ControllerVariables" :> {
+        Hold[$CellContext`nvars$$, $CellContext`nvars$28541$$, 0], 
+        Hold[$CellContext`norder$$, $CellContext`norder$28542$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> 
+      Pane[$CellContext`t = AbsoluteTiming[$CellContext`hams = Table[
+              ToExpression[
+               StringJoin["H", 
+                
+                ToString[$CellContext`i]]], {$CellContext`i, \
+$CellContext`nvars$$}]; $CellContext`lams = Table[
+              ToExpression[
+               StringJoin["a", 
+                
+                ToString[$CellContext`i]]], {$CellContext`i, \
+$CellContext`nvars$$}]; $CellContext`H = $CellContext`H0 + Apply[Plus, 
+               Table[
+               Part[$CellContext`lams, $CellContext`i] 
+                Part[$CellContext`hams, $CellContext`i], {$CellContext`i, \
+$CellContext`nvars$$}]]; $CellContext`e = Normal[
+              Series[
+               
+               Exp[$CellContext`y], {$CellContext`y, 
+                0, $CellContext`norder$$}]]; $CellContext`exps = 
+            Array[1, $CellContext`nvars$$]; $CellContext`i = 1; 
+           While[$CellContext`i <= $CellContext`nvars$$, 
+             Part[$CellContext`exps, $CellContext`i] = 
+              ReplaceAll[$CellContext`e, {$CellContext`y -> ((-$CellContext`b)
+                     Part[$CellContext`lams, $CellContext`i]) 
+                  Part[$CellContext`hams, $CellContext`i]}]; 
+             Increment[$CellContext`i]]; $CellContext`expr = Expand[
+              Apply[Times, $CellContext`exps]]; $CellContext`expr2 = 
+            Apply[Plus, 
+              Pick[
+               Apply[List, $CellContext`expr], 
+               Map[Total[
+                 Exponent[#, $CellContext`lams]]& , 
+                Apply[List, $CellContext`expr]], 
+               Apply[Alternatives, 
+                Range[0, $CellContext`norder$$]]]]; Unprotect[Power]; 
+           Format[Pattern[$CellContext`a, 
+                Blank[]]^Pattern[$CellContext`n, 
+                Blank[Integer]], FortranForm] := ReplaceAll[
+              Apply[HoldForm, {
+                Table[$CellContext`a, {$CellContext`n}]}], List -> Times]; 
+           Protect[Power]; $CellContext`prelist = Join[{$CellContext`H0}, 
+              Apply[Times, 
+               DeleteDuplicates[
+                Apply[Join, 
+                 Table[
+                  
+                  Tuples[$CellContext`hams, $CellContext`i], {$CellContext`i, \
+$CellContext`norder$$}]]], {1}]]; $CellContext`n = 
+            Length[$CellContext`prelist]; $CellContext`list = 
+            Array[1, $CellContext`n]; $CellContext`i = 1; 
+           While[$CellContext`i <= $CellContext`n, 
+             Part[$CellContext`list, $CellContext`i] = ToExpression[
+                StringReplace[
+                 ToString[
+                  FortranForm[
+                   Part[$CellContext`prelist, $CellContext`i]]], {
+                 "*" -> "", "(" -> "", ")" -> ""}]]; 
+             Increment[$CellContext`i]]; $CellContext`rules = 
+            Table[Part[$CellContext`prelist, $CellContext`i] -> 
+              Part[$CellContext`list, $CellContext`i], {$CellContext`i, 
+               Length[$CellContext`list]}]; $CellContext`rules2 = 
+            Table[Part[$CellContext`list, $CellContext`i] -> 
+              Part[$CellContext`list, $CellContext`i][$CellContext`b], \
+{$CellContext`i, 
+               Length[$CellContext`list]}]; $CellContext`x = 
+            ReplaceAll[-$CellContext`expr2 + 
+              1, $CellContext`rules]; $CellContext`expr3 = Expand[
+              ReplaceAll[
+               Normal[
+                Series[
+                 Log[
+                 1 - $CellContext`y], {$CellContext`y, 
+                  0, $CellContext`norder$$}]], $CellContext`y -> \
+$CellContext`x]]; If[
+             
+             And[$CellContext`nvars$$ == 1, $CellContext`norder$$ == 
+              1], $CellContext`finalexpansion = ((-$CellContext`a1) \
+$CellContext`b) $CellContext`H1[$CellContext`b], $CellContext`finalexpansion = 
+              ReplaceAll[
+                Apply[Plus, 
+                 Pick[
+                  Apply[List, $CellContext`expr3], 
+                  Map[Total[
+                    Exponent[#, $CellContext`lams]]& , 
+                   Apply[List, $CellContext`expr3]], 
+                  Apply[Alternatives, 
+                   Range[0, $CellContext`norder$$]]]], $CellContext`rules2]; 
+             Null]; $CellContext`d = Array[1, $CellContext`n]; $CellContext`i = 
+            1; While[$CellContext`i <= $CellContext`n, 
+             Part[$CellContext`d, $CellContext`i] = ToExpression[
+                StringJoin["d", 
+                 ToString[
+                  Part[$CellContext`list, $CellContext`i]]]]; 
+             Increment[$CellContext`i]]; $CellContext`d2 = 
+            Array[1, $CellContext`n]; $CellContext`i = 1; 
+           While[$CellContext`i <= $CellContext`n, 
+             Part[$CellContext`d2, $CellContext`i] = ToExpression[
+                StringJoin[
+                 ToString[
+                  Part[$CellContext`list, $CellContext`i]], "H0"]]; 
+             Increment[$CellContext`i]]; $CellContext`dd2 = 
+            Array[1, $CellContext`n]; $CellContext`i = 1; 
+           While[$CellContext`i <= $CellContext`n, 
+             Part[$CellContext`dd2, $CellContext`i] = ToExpression[
+                StringJoin["d", 
+                 ToString[
+                  Part[$CellContext`d2, $CellContext`i]]]]; 
+             Increment[$CellContext`i]]; $CellContext`list2 = 
+            Join[$CellContext`list, $CellContext`d2]; $CellContext`i = 1; 
+           While[$CellContext`i <= Length[$CellContext`list2], Derivative[1][
+                Part[$CellContext`list2, $CellContext`i]][$CellContext`b] = 
+              ToExpression[
+                StringJoin["d", 
+                 ToString[
+                  Part[$CellContext`list2, $CellContext`i]]]][$CellContext`b]; 
+             Increment[$CellContext`i]]; $CellContext`i = 1; 
+           While[$CellContext`i <= $CellContext`n, Derivative[1][
+                Part[$CellContext`d, $CellContext`i]][$CellContext`b] = 
+              Part[$CellContext`d, $CellContext`i][$CellContext`b] \
+$CellContext`H0[$CellContext`b] + ToExpression[
+                  StringReplace[
+                   ToString[
+                    Part[$CellContext`d, $CellContext`i]], "d" -> 
+                   ""]][$CellContext`b] $CellContext`dH0[$CellContext`b] - 
+               ToExpression[
+                StringJoin[
+                 ToString[
+                  Part[$CellContext`d, $CellContext`i]], "H0[b]"]]; 
+             Increment[$CellContext`i]]; 
+           Derivative[
+             1][$CellContext`lnZ0][$CellContext`b] = \
+-$CellContext`H0[$CellContext`b]; $CellContext`lnZ[$CellContext`b] = \
+$CellContext`lnZ0[$CellContext`b] + $CellContext`finalexpansion; \
+$CellContext`U[$CellContext`b] = -D[
+               $CellContext`lnZ[$CellContext`b], $CellContext`b]; \
+$CellContext`Cv[$CellContext`b] = (-$CellContext`b^2) D[
+               $CellContext`U[$CellContext`b], $CellContext`b]; \
+$CellContext`i = 1; 
+           While[$CellContext`i <= $CellContext`n, 
+             Part[$CellContext`d, $CellContext`i][$CellContext`b] = 
+              Part[$CellContext`list, $CellContext`i][$CellContext`b] \
+$CellContext`H0[$CellContext`b] - ToExpression[
+                StringJoin[
+                 ToString[
+                  Part[$CellContext`list, $CellContext`i]], "H0[b]"]]; 
+             Increment[$CellContext`i]]; $CellContext`i = 1; 
+           While[$CellContext`i <= $CellContext`n, 
+             Part[$CellContext`dd2, $CellContext`i][$CellContext`b] = 
+              Part[$CellContext`d2, $CellContext`i][$CellContext`b] \
+$CellContext`H0[$CellContext`b] - ToExpression[
+                StringJoin[
+                 ToString[
+                  Part[$CellContext`d2, $CellContext`i]], "H0[b]"]]; 
+             Increment[$CellContext`i]]; $CellContext`nterms = Length[
+              Apply[List, 
+               Expand[
+                $CellContext`Cv[$CellContext`b]]]]; $CellContext`finalu = 
+            Expand[
+              $CellContext`U[$CellContext`b]]; $CellContext`ntermsu = Length[
+              Apply[List, 
+               Expand[$CellContext`finalu]]]; $CellContext`finalc = Expand[
+              $CellContext`Cv[$CellContext`b]]; $CellContext`ntermsc = 
+            Length[
+              Apply[List, 
+               Expand[$CellContext`finalc]]]; Null]; Column[{
+           Style[
+           "Note: b=\[Beta]=1/T, Boltzmann constant is set to 1, and every \
+function of [b] is identified as an expectation value, i.e. H1H0[b] -> \
+<H1H0>.", Bold], 
+           Style[
+           "\nHamiltonian with small perturbation parameters {a_i} and \
+perturbations {H_i}:", Bold], $CellContext`H, 
+           Style[
+            StringJoin["\nNumber of terms in energy is ", 
+             ToString[$CellContext`ntermsu], 
+             " and number of terms in specific heat is ", 
+             ToString[$CellContext`ntermsc], ". CPU time used is ", 
+             ToString[
+              Part[$CellContext`t, 1]], " seconds."], Bold], 
+           Style[
+           "\nEnergy U corrected by the cumulants, as a function of \
+perturbation parameters {a_i}:", Bold], "U =" $CellContext`finalu, 
+           Style[
+           "\nSpecific heat at constant volume, Cv, corrected by the \
+cumulants, as a function of the perturbation parameters {a_i}:", Bold], 
+           "Cv =" $CellContext`finalc}], ImageSize -> {900, 800}, 
+        Scrollbars -> {False, True}], 
+      "Specifications" :> {{{$CellContext`nvars$$, 3, 
+          Style["Number of perturbations", Bold]}, 1, 10, 1, ControlType -> 
+         SetterBar}, {{$CellContext`norder$$, 2, 
+          Style["Order of expansion", Bold]}, 1, 10, 1, ControlType -> 
+         SetterBar}}, 
+      "Options" :> {
+       LocalizeVariables -> True, 
+        TrackedSymbols :> {$CellContext`nvars$$, $CellContext`norder$$}}, 
+      "DefaultOptions" :> {}],
+     ImageSizeCache->{943., {451., 457.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{
+  3.5546572678842077`*^9, {3.5546574048220243`*^9, 3.554657426378119*^9}, {
+   3.5546574645194607`*^9, 3.55465749415203*^9}, 3.5546578862390127`*^9, 
+   3.5546759046656227`*^9, 3.554675960600011*^9, {3.554676052020199*^9, 
+   3.55467606476937*^9}}]
+}, Open  ]]
+},
+WindowSize->{1365, 1004},
+WindowMargins->{{4, Automatic}, {Automatic, 4}},
+FrontEndVersion->"8.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (October 5, \
+2011)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 30198, 691, 1483, "Input"],
+Cell[30780, 715, 11716, 235, 925, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
