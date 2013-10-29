@@ -1,4 +1,4 @@
-cumulantexpander
+CumulantExpander
 ================
 
 Automated expansions of Hamiltonian cumulants for analyzing Monte Carlo simulations.
